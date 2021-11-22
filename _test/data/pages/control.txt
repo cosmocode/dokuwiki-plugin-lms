@@ -1,0 +1,12 @@
+====== this is the Control ======
+
+It has all kinds of content. But also Links.
+
+  * This is not a link
+    * [[this]] is
+    * [[foo:bar]] is also a link
+  * [[Another Link]]
+  * [[https://www.google.com|External links]] are not lessons
+  * [[foo:bar|duplicates]] will be ignored in the order
+
+Here is more and another [[link]].
