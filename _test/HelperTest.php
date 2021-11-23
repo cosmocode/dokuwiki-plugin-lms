@@ -15,7 +15,7 @@ class HelperTest extends DokuWikiTest
     public function setUp(): void
     {
         parent::setUp();
-        saveWikiText('control', file_get_contents(__DIR__ . '/data/pages/control.txt'), 'test');
+        saveWikiText('lms', file_get_contents(__DIR__ . '/data/pages/lms.txt'), 'test');
     }
 
     public function testMarkRead()
@@ -29,32 +29,66 @@ class HelperTest extends DokuWikiTest
         );
 
         // add lesson
-        $hlp->markLesson('foo', true, 'test');
+        $hlp->markLesson('foo', 'test', true);
         $this->assertEquals(
             ['foo'],
             array_keys($hlp->getUserLessons('test'))
         );
 
         // add second lesson
-        $hlp->markLesson('bar', true, 'test');
+        $hlp->markLesson('bar', 'test', true);
         $this->assertEquals(
             ['foo', 'bar'],
             array_keys($hlp->getUserLessons('test'))
         );
 
         // unmark first lesson
-        $hlp->markLesson('foo', false, 'test');
+        $hlp->markLesson('foo', 'test', false);
         $this->assertEquals(
             ['bar'],
             array_keys($hlp->getUserLessons('test'))
         );
     }
 
+    public function testNextLesson() {
+        $hlp = new \helper_plugin_lms();
+
+        $result = $hlp->getNextLesson('nope');
+        $this->assertEquals(false, $result, '$id is not a lesson');
+
+        $result = $hlp->getNextLesson('link');
+        $this->assertEquals(false, $result, '$id is last lesson');
+
+        $result = $hlp->getNextLesson('this');
+        $this->assertEquals('foo:bar', $result, 'next lesson no user context');
+
+        $hlp->markLesson('foo:bar', 'test', true);
+        $result = $hlp->getNextLesson('this', 'test');
+        $this->assertEquals('another_link', $result, 'skip seen lesson');
+    }
+
+    public function testPrevLesson() {
+        $hlp = new \helper_plugin_lms();
+
+        $result = $hlp->getPrevLesson('nope');
+        $this->assertEquals(false, $result, '$id is not a lesson');
+
+        $result = $hlp->getPrevLesson('this');
+        $this->assertEquals(false, $result, '$id is first lesson');
+
+        $result = $hlp->getPrevLesson('another_link');
+        $this->assertEquals('foo:bar', $result, 'prev lesson no user context');
+
+        $hlp->markLesson('foo:bar', 'test', true);
+        $result = $hlp->getPrevLesson('another_link', 'test');
+        $this->assertEquals('this', $result, 'skip seen lesson');
+    }
+
     public function testParseControlPage()
     {
         $hlp = new \helper_plugin_lms();
 
-        $result = $this->callInaccessibleMethod($hlp, 'parseControlPage', ['control']);
+        $result = $this->callInaccessibleMethod($hlp, 'parseControlPage', ['lms']);
         $expected = [
             'this',
             'foo:bar',

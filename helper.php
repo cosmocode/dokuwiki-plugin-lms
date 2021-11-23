@@ -12,14 +12,16 @@ class helper_plugin_lms extends \dokuwiki\Extension\Plugin
     /**
      * Return all lessons and info about the user's current completion status
      *
-     * @param null $user Username, null for current user
-     * @return array[] A list of lesson infos
+     * @param string|null $user Username, null for no user data
+     * @return array A list of lesson infos
      */
     public function getLessons($user = null)
     {
         $cp = $this->getConf('controlpage');
         $lessons = array_fill_keys($this->parseControlPage($cp), 0);
-        $lessons = array_merge($lessons, $this->getUserLessons($user));
+        if($user !== null) {
+            $lessons = array_merge($lessons, $this->getUserLessons($user));
+        }
 
         return $lessons;
     }
@@ -27,15 +29,11 @@ class helper_plugin_lms extends \dokuwiki\Extension\Plugin
     /**
      * @param string $id Page ID of the lesson
      * @param bool $seen Mark as seen or unseen
-     * @param null|string $user Username, null for current user
+     * @param string $user Username
      * @return bool
      */
-    public function markLesson($id, $seen = true, $user = null)
+    public function markLesson($id, $user, $seen = true)
     {
-        global $INPUT;
-        if ($user === null) {
-            $user = $INPUT->server->str('REMOTE_USER', null);
-        }
         if ($user === null) return false;
 
         $file = $this->getUserFile($user);
@@ -77,13 +75,67 @@ class helper_plugin_lms extends \dokuwiki\Extension\Plugin
      * Get Info of a single lesson
      *
      * @param string $id Page ID of the lesson
-     * @return array|false Either the lesson info or fals if given ID is not a lesson
+     * @return int|false Either the lesson info or fals if given ID is not a lesson
      */
     public function getLesson($id)
     {
         $all = $this->getLessons();
-        return $all[$id] ?: false;
+        return isset($all[$id]) ? $all[$id] : false;
     }
+
+    /**
+     * Get the next lesson relative to the given one
+     *
+     * @param string $id current lesson
+     * @param null|string $user When user is given, next unseen lesson is returned
+     * @return string
+     */
+    public function getNextLesson($id, $user=null) {
+        $all = $this->getLessons($user);
+
+        if(!isset($all[$id])) return false; // current page is not a lesson
+
+        $keys = array_keys($all);
+        $self = array_search($id, $keys);
+        $len = count($keys);
+
+        for($i=$self+1; $i < $len; $i++) {
+            if($user !== null && $all[$keys[$i]] !== 0) {
+                continue; // next element has already been seen by user
+            }
+            return $keys[$i];
+        }
+
+        // no more lessons
+        return false;
+    }
+
+    /**
+     * Get the previous lesson relative to the given one
+     *
+     * @param string $id current lesson
+     * @param null|string $user When user is given, previous unseen lesson is returned
+     * @return string
+     */
+    public function getPrevLesson($id, $user=null) {
+        $all = $this->getLessons($user);
+
+        if(!isset($all[$id])) return false; // current page is not a lesson
+
+        $keys = array_keys($all);
+        $self = array_search($id, $keys);
+
+        for($i=$self-1; $i >= 0; $i--) {
+            if($user !== null && $all[$keys[$i]] !== 0) {
+                continue; // next element has already been seen by user
+            }
+            return $keys[$i];
+        }
+
+        // no more lessons
+        return false;
+    }
+
 
     /**
      * Get the filename used for storing lesson completions
