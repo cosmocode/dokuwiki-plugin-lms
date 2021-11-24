@@ -72,14 +72,14 @@ class helper_plugin_lms extends \dokuwiki\Extension\Plugin
     }
 
     /**
-     * Get Info of a single lesson
+     * Get Seen-Info of a single lesson
      *
      * @param string $id Page ID of the lesson
      * @return int|false Either the lesson info or fals if given ID is not a lesson
      */
-    public function getLesson($id)
+    public function getLesson($id, $user)
     {
-        $all = $this->getLessons();
+        $all = $this->getLessons($user);
         return isset($all[$id]) ? $all[$id] : false;
     }
 
