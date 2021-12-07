@@ -8,6 +8,22 @@
  */
 class syntax_plugin_lms extends \dokuwiki\Extension\SyntaxPlugin
 {
+    /** @var helper_plugin_lms */
+    protected $hlp;
+
+    /** @var string current user */
+    protected $user;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        global $INPUT;
+        $this->hlp = $this->loadHelper('lms');
+        $this->user = $INPUT->server->str('REMOTE_USER');
+    }
+
     /** @inheritDoc */
     public function getType()
     {
@@ -47,20 +63,15 @@ class syntax_plugin_lms extends \dokuwiki\Extension\SyntaxPlugin
             return false;
         }
         $renderer->nocache();
-
-        global $INPUT;
-        $user = $INPUT->server->str('REMOTE_USER');
-        if (!$user) return true;
+        if (!$this->user) return true;
 
         global $INFO;
-        /** @var helper_plugin_lms $hlp */
-        $hlp = $this->loadHelper('lms');
-        $seen = $hlp->getLesson($INFO['id'], $user);
+        $seen = $this->hlp->getLesson($INFO['id'], $this->user);
         if ($seen === false) return true; // we're not on a lesson page
 
         $renderer->doc .= '<div class="lms-nav">';
         $renderer->doc .= $this->prevButton();
-        $renderer->doc .= $this->toggleButton((bool)$seen);
+        $renderer->doc .= $this->toggleButton($seen);
         $renderer->doc .= $this->nextButton();
         $renderer->doc .= '</div>';
 
@@ -88,24 +99,29 @@ class syntax_plugin_lms extends \dokuwiki\Extension\SyntaxPlugin
         ];
 
         $svg = inlineSVG(__DIR__ . '/img/' . $cmd . '.svg');
+        $span = '<span class="a11y">' . hsc($this->getLang($cmd)) . '</span>';
 
-        return '<a ' . buildAttributes($attr) . '>' . $svg . '</a>';
+        return '<a ' . buildAttributes($attr) . '>' . $span . $svg . '</a>';
     }
 
     /**
      * Toggle seen status
      *
-     * @param bool $seen
+     * @param bool|null $seen current seen status
      * @return string
      */
-    public function toggleButton($seen)
+    public function toggleButton($seen = null)
     {
         global $INFO;
+
+        if ($seen === null) {
+            $seen = $this->hlp->getLesson($INFO['id'], $this->user);
+        }
 
         if ($seen) {
             return $this->makeLink($INFO['id'], 'unseen');
         }
-        return $this->makeLink($INFO['id'], 'seen');
+        return $this->makeLink($INFO['id'], 'check');
     }
 
     /**
@@ -116,11 +132,7 @@ class syntax_plugin_lms extends \dokuwiki\Extension\SyntaxPlugin
     public function nextButton()
     {
         global $INFO;
-
-        /** @var helper_plugin_lms $hlp */
-        $hlp = $this->loadHelper('lms');
-        $next = $hlp->getNextLesson($INFO['id']);
-
+        $next = $this->hlp->getNextLesson($INFO['id']);
         if (!$next) return '';
         return $this->makeLink($next, 'next');
     }
@@ -133,11 +145,7 @@ class syntax_plugin_lms extends \dokuwiki\Extension\SyntaxPlugin
     public function prevButton()
     {
         global $INFO;
-
-        /** @var helper_plugin_lms $hlp */
-        $hlp = $this->loadHelper('lms');
-        $prev = $hlp->getPrevLesson($INFO['id']);
-
+        $prev = $this->hlp->getPrevLesson($INFO['id']);
         if (!$prev) return '';
         return $this->makeLink($prev, 'prev');
     }
