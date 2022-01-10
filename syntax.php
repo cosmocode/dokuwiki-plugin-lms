@@ -121,7 +121,7 @@ class syntax_plugin_lms extends \dokuwiki\Extension\SyntaxPlugin
         if ($seen) {
             return $this->makeLink($INFO['id'], 'unseen');
         }
-        return $this->makeLink($INFO['id'], 'check');
+        return $this->makeLink($INFO['id'], 'seen');
     }
 
     /**
