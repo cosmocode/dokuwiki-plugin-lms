@@ -9,4 +9,16 @@ jQuery(function (){
         }
 
     });
+
+    // mark whole sections seen
+    const navheaders = jQuery('nav div.content h1, nav div.content h2, nav div.content h3, nav div.content h4, nav div.content h5');
+    navheaders.each(function (idx, header) {
+        const $list = jQuery(jQuery(header).next()[0]).find('ul');
+        if ($list.length) {
+            if ($list.find('a').length === $list.find('a.lms-seen').length) {
+                jQuery(header).addClass('lms-seen');
+            }
+        }
+    });
+
 });
