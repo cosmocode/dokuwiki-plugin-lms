@@ -16,6 +16,7 @@ class HelperTest extends DokuWikiTest
     {
         parent::setUp();
         saveWikiText('lms', file_get_contents(__DIR__ . '/data/pages/lms.txt'), 'test');
+        saveWikiText('foo:lms', file_get_contents(__DIR__ . '/data/pages/lms.txt'), 'test');
     }
 
     public function testMarkRead()
@@ -84,7 +85,7 @@ class HelperTest extends DokuWikiTest
         $this->assertEquals('this', $result, 'skip seen lesson');
     }
 
-    public function testParseControlPage()
+    public function testParseTopControlPage()
     {
         $hlp = new \helper_plugin_lms();
 
@@ -93,7 +94,26 @@ class HelperTest extends DokuWikiTest
             'this',
             'foo:bar',
             'another_link',
+            'relativeup',
+            'blarg:down',
+            'toplevel',
             'link',
+        ];
+
+        $this->assertEquals($expected, $result);
+    }
+
+    public function testParseNsControlPage()
+    {
+        $hlp = new \helper_plugin_lms();
+
+        $result = $this->callInaccessibleMethod($hlp, 'parseControlPage', ['foo:lms']);
+        $expected = [
+            'foo:this',
+            'foo:bar',
+            'foo:another_link',
+            'foo:blarg:down',
+            'foo:link',
         ];
 
         $this->assertEquals($expected, $result);

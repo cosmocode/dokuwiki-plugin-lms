@@ -18,8 +18,10 @@ class helper_plugin_lms extends \dokuwiki\Extension\Plugin
     public function getLessons($user = null)
     {
         $cp = $this->getConf('controlpage');
+        $cp = page_findnearest($cp, false);
+
         $lessons = array_fill_keys($this->parseControlPage($cp), 0);
-        if($user !== null) {
+        if ($user !== null) {
             $lessons = array_merge($lessons, $this->getUserLessons($user));
         }
 
@@ -90,17 +92,18 @@ class helper_plugin_lms extends \dokuwiki\Extension\Plugin
      * @param null|string $user When user is given, next unseen lesson is returned
      * @return string
      */
-    public function getNextLesson($id, $user=null) {
+    public function getNextLesson($id, $user = null)
+    {
         $all = $this->getLessons($user);
 
-        if(!isset($all[$id])) return false; // current page is not a lesson
+        if (!isset($all[$id])) return false; // current page is not a lesson
 
         $keys = array_keys($all);
         $self = array_search($id, $keys);
         $len = count($keys);
 
-        for($i=$self+1; $i < $len; $i++) {
-            if($user !== null && $all[$keys[$i]] !== 0) {
+        for ($i = $self + 1; $i < $len; $i++) {
+            if ($user !== null && $all[$keys[$i]] !== 0) {
                 continue; // next element has already been seen by user
             }
             return $keys[$i];
@@ -117,16 +120,17 @@ class helper_plugin_lms extends \dokuwiki\Extension\Plugin
      * @param null|string $user When user is given, previous unseen lesson is returned
      * @return string
      */
-    public function getPrevLesson($id, $user=null) {
+    public function getPrevLesson($id, $user = null)
+    {
         $all = $this->getLessons($user);
 
-        if(!isset($all[$id])) return false; // current page is not a lesson
+        if (!isset($all[$id])) return false; // current page is not a lesson
 
         $keys = array_keys($all);
         $self = array_search($id, $keys);
 
-        for($i=$self-1; $i >= 0; $i--) {
-            if($user !== null && $all[$keys[$i]] !== 0) {
+        for ($i = $self - 1; $i >= 0; $i--) {
+            if ($user !== null && $all[$keys[$i]] !== 0) {
                 continue; // next element has already been seen by user
             }
             return $keys[$i];
@@ -159,6 +163,8 @@ class helper_plugin_lms extends \dokuwiki\Extension\Plugin
      */
     protected function parseControlPage($cp)
     {
+        $cpns = getNS($cp);
+        $exists = false; // ignored
         $pages = [];
 
         $instructions = p_cached_instructions(wikiFN($cp), false, $cp);
@@ -166,7 +172,15 @@ class helper_plugin_lms extends \dokuwiki\Extension\Plugin
 
         foreach ($instructions as $instruction) {
             if ($instruction[0] !== 'internallink') continue;
-            $link = cleanID($instruction[1][0]);
+            $link = $instruction[1][0];
+            resolve_pageid($cpns, $link, $exists);
+
+            // Only pages below the control page's namespace are considered lessons
+            $ns = getNS($link);
+            if (strpos(":$ns", ":$cpns") !== 0) {
+                continue;
+            }
+
             $pages[] = $link;
         }
 

@@ -8,5 +8,8 @@ It has all kinds of content. But also Links.
   * [[Another Link]]
   * [[https://www.google.com|External links]] are not lessons
   * [[foo:bar|duplicates]] will be ignored in the order
+  * [[..:relativeup]]
+  * [[.:blarg:down]]
+  * [[:toplevel]]
 
 Here is more and another [[link]].
