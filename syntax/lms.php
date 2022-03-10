@@ -6,7 +6,7 @@
  * @license GPL 2 http://www.gnu.org/licenses/gpl-2.0.html
  * @author  Andreas Gohr <dokuwiki@cosmocode.de>
  */
-class syntax_plugin_lms extends \dokuwiki\Extension\SyntaxPlugin
+class syntax_plugin_lms_lms extends \dokuwiki\Extension\SyntaxPlugin
 {
     /** @var helper_plugin_lms */
     protected $hlp;
@@ -45,7 +45,7 @@ class syntax_plugin_lms extends \dokuwiki\Extension\SyntaxPlugin
     /** @inheritDoc */
     public function connectTo($mode)
     {
-        $this->Lexer->addSpecialPattern('~~LMS~~', $mode, 'plugin_lms');
+        $this->Lexer->addSpecialPattern('~~LMS~~', $mode, 'plugin_lms_lms');
     }
 
     /** @inheritDoc */
@@ -98,7 +98,7 @@ class syntax_plugin_lms extends \dokuwiki\Extension\SyntaxPlugin
             'title' => $this->getLang($cmd),
         ];
 
-        $svg = inlineSVG(__DIR__ . '/img/' . $cmd . '.svg');
+        $svg = inlineSVG(__DIR__ . '/../img/' . $cmd . '.svg');
         $span = '<span class="a11y">' . hsc($this->getLang($cmd)) . '</span>';
 
         return '<a ' . buildAttributes($attr) . '>' . $span . $svg . '</a>';

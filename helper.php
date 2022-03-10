@@ -17,8 +17,8 @@ class helper_plugin_lms extends \dokuwiki\Extension\Plugin
      */
     public function getLessons($user = null)
     {
-        $cp = $this->getConf('controlpage');
-        $cp = page_findnearest($cp, false);
+        $cp = $this->getControlPage();
+        if (!$cp) return [];
 
         $lessons = array_fill_keys($this->parseControlPage($cp), 0);
         if ($user !== null) {
@@ -26,6 +26,17 @@ class helper_plugin_lms extends \dokuwiki\Extension\Plugin
         }
 
         return $lessons;
+    }
+
+    /**
+     * Find the nearest controlpage
+     *
+     * @return false|string
+     */
+    public function getControlPage()
+    {
+        $cp = $this->getConf('controlpage');
+        return page_findnearest($cp, false);
     }
 
     /**
