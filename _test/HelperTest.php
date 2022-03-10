@@ -95,6 +95,7 @@ class HelperTest extends DokuWikiTest
             'foo:bar',
             'another_link',
             'relativeup',
+            'foo2:this',
             'blarg:down',
             'toplevel',
             'link',

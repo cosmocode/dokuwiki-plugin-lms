@@ -177,7 +177,8 @@ class helper_plugin_lms extends \dokuwiki\Extension\Plugin
 
             // Only pages below the control page's namespace are considered lessons
             $ns = getNS($link);
-            if (strpos(":$ns", ":$cpns") !== 0) {
+            $check = $cpns ? ":$cpns" : '';
+            if (!preg_match("/^$check(:|$)/", ":$ns")) {
                 continue;
             }
 
