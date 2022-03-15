@@ -35,8 +35,15 @@ class helper_plugin_lms extends \dokuwiki\Extension\Plugin
      */
     public function getControlPage()
     {
+        global $ID;
+        global $INFO;
+
         $cp = $this->getConf('controlpage');
-        return page_findnearest($cp, false);
+        $oldid = $ID;
+        $ID = $INFO['id'];
+        $cp = page_findnearest($cp, false);
+        $ID = $oldid;
+        return $cp;
     }
 
     /**
