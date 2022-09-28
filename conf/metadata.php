@@ -5,6 +5,6 @@
  * @author Andreas Gohr <dokuwiki@cosmocode.de>
  */
 
-
 $meta['controlpage'] = array('string');
+$meta['hierarchical'] = array('string');
 

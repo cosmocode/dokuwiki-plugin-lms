@@ -6,4 +6,4 @@
  */
 
 $conf['controlpage']    = 'lms';
-
+$conf['hierarchical']   = 0;
