@@ -1,5 +1,8 @@
 <?php
 
+use dokuwiki\plugin\controlpage\ControlPage;
+use dokuwiki\plugin\controlpage\Page;
+
 /**
  * DokuWiki Plugin lms (Helper Component)
  *
@@ -13,16 +16,26 @@ class helper_plugin_lms extends \dokuwiki\Extension\Plugin
      * Return all lessons and info about the user's current completion status
      *
      * @param string|null $user Username, null for no user data
-     * @return array A list of lesson infos
+     * @return Page[] A list of lesson infos
      */
     public function getLessons($user = null)
     {
         $cp = $this->getControlPage();
         if (!$cp) return [];
 
-        $lessons = array_fill_keys($this->parseControlPage($cp), 0);
+        try {
+            $control = new ControlPage($cp, ControlPage::FLAG_NOEXTERNAL);
+        } catch (\RuntimeException $e) {
+            return [];
+        }
+        $lessons = $control->getAll();
+
         if ($user !== null) {
-            $lessons = array_merge($lessons, $this->getUserLessons($user));
+            foreach ($this->getUserLessons($user) as $page => $done) {
+                if (isset($lessons[$page])) {
+                    $lessons[$page]->setProperty('lms', $done);
+                }
+            }
         }
 
         return $lessons;
@@ -40,7 +53,7 @@ class helper_plugin_lms extends \dokuwiki\Extension\Plugin
 
         $cp = $this->getConf('controlpage');
         $oldid = $ID;
-        $ID = $INFO['id'];
+        $ID = $INFO['id'] ?? $ID;
         $cp = page_findnearest($cp, false);
         $ID = $oldid;
         return $cp;
@@ -95,12 +108,13 @@ class helper_plugin_lms extends \dokuwiki\Extension\Plugin
      * Get Seen-Info of a single lesson
      *
      * @param string $id Page ID of the lesson
-     * @return int|false Either the lesson info or fals if given ID is not a lesson
+     * @param string $user User
+     * @return int|false Either the lesson info or false if given ID is not a lesson
      */
     public function getLesson($id, $user)
     {
         $all = $this->getLessons($user);
-        return isset($all[$id]) ? $all[$id] : false;
+        return isset($all[$id]) ? $all[$id]->getProperty('lms', 0) : false;
     }
 
     /**
@@ -121,7 +135,7 @@ class helper_plugin_lms extends \dokuwiki\Extension\Plugin
         $len = count($keys);
 
         for ($i = $self + 1; $i < $len; $i++) {
-            if ($user !== null && $all[$keys[$i]] !== 0) {
+            if ($user !== null && $all[$keys[$i]]->getProperty('lms', 0) !== 0) {
                 continue; // next element has already been seen by user
             }
             return $keys[$i];
@@ -148,7 +162,7 @@ class helper_plugin_lms extends \dokuwiki\Extension\Plugin
         $self = array_search($id, $keys);
 
         for ($i = $self - 1; $i >= 0; $i--) {
-            if ($user !== null && $all[$keys[$i]] !== 0) {
+            if ($user !== null && $all[$keys[$i]]->getProperty('lms', 0) !== 0) {
                 continue; // next element has already been seen by user
             }
             return $keys[$i];
@@ -171,40 +185,6 @@ class helper_plugin_lms extends \dokuwiki\Extension\Plugin
         // we're not using cache files but our own meta directory
         $user = utf8_encodeFN($user); // make sure the user is clean for directories
         return $conf['metadir'] . '_lms/' . $user . '.lms';
-    }
-
-    /**
-     * Get a list of links from the given control page
-     *
-     * @param string $cp The control page
-     * @return array
-     */
-    protected function parseControlPage($cp)
-    {
-        $cpns = getNS($cp);
-        $exists = false; // ignored
-        $pages = [];
-
-        $instructions = p_cached_instructions(wikiFN($cp), false, $cp);
-        if ($instructions === null) return [];
-
-        foreach ($instructions as $instruction) {
-            if ($instruction[0] !== 'internallink') continue;
-            $link = $instruction[1][0];
-            resolve_pageid($cpns, $link, $exists);
-
-            // Only pages below the control page's namespace are considered lessons
-            $ns = getNS($link);
-            $check = $cpns ? ":$cpns" : '';
-            if (!preg_match("/^$check(:|$)/", ":$ns")) {
-                continue;
-            }
-
-            $pages[] = $link;
-        }
-
-        $pages = array_values(array_unique($pages));
-        return $pages;
     }
 }
 

@@ -1,0 +1,1 @@
+https://github.com/cosmocode/dokuwiki-plugin-controlpage.git controlpage

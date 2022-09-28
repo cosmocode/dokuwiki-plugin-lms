@@ -85,48 +85,4 @@ class HelperTest extends DokuWikiTest
         $this->assertEquals('this', $result, 'skip seen lesson');
     }
 
-    public function testParseTopControlPage()
-    {
-        $hlp = new \helper_plugin_lms();
-
-        $result = $this->callInaccessibleMethod($hlp, 'parseControlPage', ['lms']);
-        $expected = [
-            'this',
-            'foo:bar',
-            'another_link',
-            'relativeup',
-            'foo2:this',
-            'blarg:down',
-            'toplevel',
-            'link',
-        ];
-
-        $this->assertEquals($expected, $result);
-    }
-
-    public function testParseNsControlPage()
-    {
-        $hlp = new \helper_plugin_lms();
-
-        $result = $this->callInaccessibleMethod($hlp, 'parseControlPage', ['foo:lms']);
-        $expected = [
-            'foo:this',
-            'foo:bar',
-            'foo:another_link',
-            'foo:blarg:down',
-            'foo:link',
-        ];
-
-        $this->assertEquals($expected, $result);
-    }
-
-    public function testParseControlPageMissing()
-    {
-        $hlp = new \helper_plugin_lms();
-
-        $result = $this->callInaccessibleMethod($hlp, 'parseControlPage', ['nope']);
-        $expected = [];
-
-        $this->assertEquals($expected, $result);
-    }
 }
