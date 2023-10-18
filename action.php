@@ -8,13 +8,12 @@
  */
 class action_plugin_lms extends \dokuwiki\Extension\ActionPlugin
 {
-
     /** @inheritDoc */
     public function register(Doku_Event_Handler $controller)
     {
         $controller->register_hook('DOKUWIKI_STARTED', 'AFTER', $this, 'handleStart');
         $controller->register_hook('ACTION_ACT_PREPROCESS', 'BEFORE', $this, 'handleAction');
-
+        $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handleAdminAjax');
     }
 
     /**
@@ -83,5 +82,35 @@ class action_plugin_lms extends \dokuwiki\Extension\ActionPlugin
         }
     }
 
-}
+    /**
+     * Check username input against all users with saved LMS data
+     * and return a list of matching names
+     *
+     * @param Doku_Event $event
+     * @return void
+     */
+    public function handleAdminAjax(Doku_Event $event)
+    {
+        if ($event->data !== 'plugin_lms_autocomplete') return;
+        global $INPUT;
 
+        if (!checkSecurityToken()) return;
+
+        $event->preventDefault();
+        $event->stopPropagation();
+
+        /** @var helper_plugin_lms $hlp */
+        $hlp = $this->loadHelper('lms');
+
+        $knownUsers = $hlp->getKnownUsers();
+
+        $search = $INPUT->str('user');
+        $found = array_filter($knownUsers, function ($user) use ($search) {
+            return (strstr(strtolower($user), strtolower($search))) !== false ? $user : null;
+        });
+
+        header('Content-Type: application/json');
+
+        echo json_encode($found);
+    }
+}
