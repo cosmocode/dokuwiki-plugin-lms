@@ -54,30 +54,42 @@ class HelperTest extends DokuWikiTest
     public function testNextLesson() {
         $hlp = new \helper_plugin_lms();
 
-        $result = $hlp->getNextLesson('nope');
+        $id = 'nope';
+        $this->setIdGlobals($id);
+        $result = $hlp->getNextLesson($id);
         $this->assertEquals(false, $result, '$id is not a lesson');
 
-        $result = $hlp->getNextLesson('link');
+        $id = 'link';
+        $this->setIdGlobals($id);
+        $result = $hlp->getNextLesson($id);
         $this->assertEquals(false, $result, '$id is last lesson');
 
-        $result = $hlp->getNextLesson('this');
+        $id = 'this';
+        $this->setIdGlobals($id);
+        $result = $hlp->getNextLesson($id);
         $this->assertEquals('foo:bar', $result, 'next lesson no user context');
 
         $hlp->markLesson('foo:bar', 'test', true);
-        $result = $hlp->getNextLesson('this', 'test');
+        $result = $hlp->getNextLesson($id, 'test');
         $this->assertEquals('another_link', $result, 'skip seen lesson');
     }
 
     public function testPrevLesson() {
         $hlp = new \helper_plugin_lms();
 
+        $id = 'nope';
+        $this->setIdGlobals($id);
         $result = $hlp->getPrevLesson('nope');
         $this->assertEquals(false, $result, '$id is not a lesson');
 
+        $id = 'this';
+        $this->setIdGlobals($id);
         $result = $hlp->getPrevLesson('this');
         $this->assertEquals(false, $result, '$id is first lesson');
 
-        $result = $hlp->getPrevLesson('another_link');
+        $id = 'another_link';
+        $this->setIdGlobals($id);
+        $result = $hlp->getPrevLesson($id);
         $this->assertEquals('foo:bar', $result, 'prev lesson no user context');
 
         $hlp->markLesson('foo:bar', 'test', true);
@@ -128,5 +140,17 @@ class HelperTest extends DokuWikiTest
         $expected = [];
 
         $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * @param string $id
+     * @return void
+     */
+    protected function setIdGlobals($id)
+    {
+        global $ID;
+        global $INFO;
+        $ID = $id;
+        $INFO['id'] = $ID;
     }
 }
