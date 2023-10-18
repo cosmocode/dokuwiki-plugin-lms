@@ -1,12 +1,14 @@
 <?php
 
+use dokuwiki\Extension\Plugin;
+
 /**
  * DokuWiki Plugin lms (Helper Component)
  *
  * @license GPL 2 http://www.gnu.org/licenses/gpl-2.0.html
  * @author  Andreas Gohr <dokuwiki@cosmocode.de>
  */
-class helper_plugin_lms extends \dokuwiki\Extension\Plugin
+class helper_plugin_lms extends Plugin
 {
     /**
      * Return all lessons and info about the user's current completion status
@@ -76,7 +78,7 @@ class helper_plugin_lms extends \dokuwiki\Extension\Plugin
         $lessons = [];
         $lines = file($file);
         foreach ($lines as $line) {
-            list($time, $id, $seen) = explode("\t", trim($line));
+            [$time, $id, $seen] = explode("\t", trim($line));
 
             // we use simple log files
             if ($seen) {
@@ -99,7 +101,7 @@ class helper_plugin_lms extends \dokuwiki\Extension\Plugin
     public function getLesson($id, $user)
     {
         $all = $this->getLessons($user);
-        return isset($all[$id]) ? $all[$id] : false;
+        return $all[$id] ?? false;
     }
 
     /**
