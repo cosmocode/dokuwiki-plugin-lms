@@ -27,7 +27,7 @@ class admin_plugin_lms extends \dokuwiki\Extension\AdminPlugin
 
         echo '<h1>' . $this->getLang('menu') . '</h1>';
 
-        $form = new dokuwiki\Form\Form(['method' => 'POST']);
+        $form = new dokuwiki\Form\Form(['method' => 'POST', 'id' => 'lms__admin-autocomplete']);
         $form->addTextInput('user', $this->getLang('username'));
         $form->addButton('submit', '🔍');
         echo '<p>'. $form->toHTML() .'</p>';
@@ -46,15 +46,14 @@ class admin_plugin_lms extends \dokuwiki\Extension\AdminPlugin
             echo html_wikilink($id);
             echo '</td>';
             echo '<td>';
-            if($dt){
+            if ($dt){
                 echo dformat($dt);
+            } else {
+                echo '---';
             }
             echo '</td>';
             echo '</tr>';
         }
         echo '</table>';
-
-
     }
 }
-

@@ -173,6 +173,23 @@ class helper_plugin_lms extends \dokuwiki\Extension\Plugin
         return $conf['metadir'] . '_lms/' . $user . '.lms';
     }
 
+    public function getKnownUsers()
+    {
+        global $conf;
+
+        $lmsData = $conf['metadir'] . '_lms/';
+
+        $s = scandir($lmsData);
+
+        $users = array_map(function ($file) {
+            if (!in_array($file, ['.', '..'])) {
+                return str_replace('.lms', '', $file);
+            }
+        }, $s);
+
+        return array_filter($users);
+    }
+
     /**
      * Get a list of links from the given control page
      *
