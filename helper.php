@@ -8,7 +8,6 @@
  */
 class helper_plugin_lms extends \dokuwiki\Extension\Plugin
 {
-
     /**
      * Return all lessons and info about the user's current completion status
      *
@@ -224,4 +223,3 @@ class helper_plugin_lms extends \dokuwiki\Extension\Plugin
         return $pages;
     }
 }
-

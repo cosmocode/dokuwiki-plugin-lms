@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DokuWiki Plugin lms (Admin Component)
  *
@@ -12,7 +13,6 @@ class admin_plugin_lms extends \dokuwiki\Extension\AdminPlugin
     {
         return false;
     }
-
 
     /** @inheritDoc */
     public function handle()
@@ -30,15 +30,15 @@ class admin_plugin_lms extends \dokuwiki\Extension\AdminPlugin
         $form = new dokuwiki\Form\Form(['method' => 'POST', 'id' => 'lms__admin-autocomplete']);
         $form->addTextInput('user', $this->getLang('username'));
         $form->addButton('submit', '🔍');
-        echo '<p>'. $form->toHTML() .'</p>';
+        echo '<p>' . $form->toHTML() . '</p>';
 
-        if(!$INPUT->str('user')) return;
+        if (!$INPUT->str('user')) return;
 
         /** @var helper_plugin_lms $hlp */
         $hlp = $this->loadHelper('lms');
         $list = $hlp->getLessons($INPUT->str('user'));
 
-        echo sprintf('<h2>'.$this->getLang('status').'</h2>', hsc($INPUT->str('user')));
+        echo sprintf('<h2>' . $this->getLang('status') . '</h2>', hsc($INPUT->str('user')));
         echo '<table class="inline">';
         foreach ($list as $id => $dt) {
             echo '<tr>';
@@ -46,7 +46,7 @@ class admin_plugin_lms extends \dokuwiki\Extension\AdminPlugin
             echo html_wikilink($id);
             echo '</td>';
             echo '<td>';
-            if ($dt){
+            if ($dt) {
                 echo dformat($dt);
             } else {
                 echo '---';

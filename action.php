@@ -8,7 +8,6 @@
  */
 class action_plugin_lms extends \dokuwiki\Extension\ActionPlugin
 {
-
     /** @inheritDoc */
     public function register(Doku_Event_Handler $controller)
     {

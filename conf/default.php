@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Default settings for the lms plugin
  *
@@ -6,4 +7,3 @@
  */
 
 $conf['controlpage']    = 'lms';
-
