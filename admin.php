@@ -1,12 +1,15 @@
 <?php
 
+use dokuwiki\Extension\AdminPlugin;
+use dokuwiki\Form\Form;
+
 /**
  * DokuWiki Plugin lms (Admin Component)
  *
  * @license GPL 2 http://www.gnu.org/licenses/gpl-2.0.html
  * @author  Andreas Gohr <dokuwiki@cosmocode.de>
  */
-class admin_plugin_lms extends \dokuwiki\Extension\AdminPlugin
+class admin_plugin_lms extends AdminPlugin
 {
     /** @inheritDoc */
     public function forAdminOnly()
@@ -27,7 +30,7 @@ class admin_plugin_lms extends \dokuwiki\Extension\AdminPlugin
 
         echo '<h1>' . $this->getLang('menu') . '</h1>';
 
-        $form = new dokuwiki\Form\Form(['method' => 'POST', 'id' => 'lms__admin-autocomplete']);
+        $form = new Form(['method' => 'POST', 'id' => 'lms__admin-autocomplete']);
         $form->addTextInput('user', $this->getLang('username'));
         $form->addButton('submit', '🔍');
         echo '<p>' . $form->toHTML() . '</p>';

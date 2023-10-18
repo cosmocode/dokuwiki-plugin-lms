@@ -1,15 +1,19 @@
 <?php
 
+use dokuwiki\Extension\ActionPlugin;
+use dokuwiki\Extension\EventHandler;
+use dokuwiki\Extension\Event;
+
 /**
  * DokuWiki Plugin lms (Action Component)
  *
  * @license GPL 2 http://www.gnu.org/licenses/gpl-2.0.html
  * @author  Andreas Gohr <dokuwiki@cosmocode.de>
  */
-class action_plugin_lms extends \dokuwiki\Extension\ActionPlugin
+class action_plugin_lms extends ActionPlugin
 {
     /** @inheritDoc */
-    public function register(Doku_Event_Handler $controller)
+    public function register(EventHandler $controller)
     {
         $controller->register_hook('DOKUWIKI_STARTED', 'AFTER', $this, 'handleStart');
         $controller->register_hook('ACTION_ACT_PREPROCESS', 'BEFORE', $this, 'handleAction');
@@ -23,7 +27,7 @@ class action_plugin_lms extends \dokuwiki\Extension\ActionPlugin
      * @param mixed $param optional parameter passed when event was registered
      * @return void
      */
-    public function handleStart(Doku_Event $event, $param)
+    public function handleStart(Event $event, $param)
     {
         global $JSINFO;
         global $INPUT;
@@ -45,7 +49,7 @@ class action_plugin_lms extends \dokuwiki\Extension\ActionPlugin
      * @param mixed $param optional parameter passed when event was registered
      * @return void
      */
-    public function handleAction(Doku_Event $event, $param)
+    public function handleAction(Event $event, $param)
     {
         global $INPUT;
         global $ID;
@@ -89,7 +93,7 @@ class action_plugin_lms extends \dokuwiki\Extension\ActionPlugin
      * @param Doku_Event $event
      * @return void
      */
-    public function handleAdminAjax(Doku_Event $event)
+    public function handleAdminAjax(Event $event)
     {
         if ($event->data !== 'plugin_lms_autocomplete') return;
         global $INPUT;

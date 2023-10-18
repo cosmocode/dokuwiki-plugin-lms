@@ -1,12 +1,14 @@
 <?php
 
+use dokuwiki\Extension\SyntaxPlugin;
+
 /**
  * DokuWiki Plugin lms (Syntax Component)
  *
  * @license GPL 2 http://www.gnu.org/licenses/gpl-2.0.html
  * @author  Andreas Gohr <dokuwiki@cosmocode.de>
  */
-class syntax_plugin_lms_include extends \dokuwiki\Extension\SyntaxPlugin
+class syntax_plugin_lms_include extends SyntaxPlugin
 {
     /** @var helper_plugin_lms */
     protected $hlp;
@@ -51,7 +53,7 @@ class syntax_plugin_lms_include extends \dokuwiki\Extension\SyntaxPlugin
     /** @inheritDoc */
     public function handle($match, $state, $pos, Doku_Handler $handler)
     {
-        $data = array();
+        $data = [];
 
         return $data;
     }
