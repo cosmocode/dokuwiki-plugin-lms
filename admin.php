@@ -39,7 +39,7 @@ class admin_plugin_lms extends AdminPlugin
 
         /** @var helper_plugin_lms $hlp */
         $hlp = $this->loadHelper('lms');
-        $list = $hlp->getLessons($INPUT->str('user'));
+        $list = $hlp->getUserLessons($INPUT->str('user'));
 
         echo sprintf('<h2>' . $this->getLang('status') . '</h2>', hsc($INPUT->str('user')));
         echo '<table class="inline">';
