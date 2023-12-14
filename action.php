@@ -23,7 +23,7 @@ class action_plugin_lms extends ActionPlugin
     /**
      * Initiatilize seen info for current user
      *
-     * @param Doku_Event $event event object by reference
+     * @param Event $event event object by reference
      * @param mixed $param optional parameter passed when event was registered
      * @return void
      */
@@ -45,7 +45,7 @@ class action_plugin_lms extends ActionPlugin
     /**
      * Run user actions
      *
-     * @param Doku_Event $event event object by reference
+     * @param Event $event event object by reference
      * @param mixed $param optional parameter passed when event was registered
      * @return void
      */
@@ -90,7 +90,7 @@ class action_plugin_lms extends ActionPlugin
      * Check username input against all users with saved LMS data
      * and return a list of matching names
      *
-     * @param Doku_Event $event
+     * @param Event $event
      * @return void
      */
     public function handleAdminAjax(Event $event)
