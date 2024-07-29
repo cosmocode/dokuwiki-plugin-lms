@@ -1,6 +1,7 @@
 <?php
 
 use dokuwiki\Extension\Plugin;
+use dokuwiki\File\PageResolver;
 
 /**
  * DokuWiki Plugin lms (Helper Component)
@@ -186,6 +187,7 @@ class helper_plugin_lms extends Plugin
             if (!in_array($file, ['.', '..'])) {
                 return str_replace('.lms', '', $file);
             }
+            return null;
         }, $s);
 
         return array_filter($users);
@@ -200,16 +202,18 @@ class helper_plugin_lms extends Plugin
     protected function parseControlPage($cp)
     {
         $cpns = getNS($cp);
-        $exists = false; // ignored
         $pages = [];
 
         $instructions = p_cached_instructions(wikiFN($cp), false, $cp);
         if ($instructions === null) return [];
 
+
+        $resolver = new PageResolver($cp);
+
         foreach ($instructions as $instruction) {
             if ($instruction[0] !== 'internallink') continue;
             $link = $instruction[1][0];
-            resolve_pageid($cpns, $link, $exists);
+            $link = $resolver->resolveId($link);
 
             // Only pages below the control page's namespace are considered lessons
             $ns = getNS($link);
