@@ -1,7 +1,7 @@
 base   lms
 author Andreas Gohr
 email  dokuwiki@cosmocode.de
-date   2023-11-18
+date   2024-07-29
 name   lms plugin
 desc   A Lesson Management System
 url    https://www.dokuwiki.org/plugin:lms
